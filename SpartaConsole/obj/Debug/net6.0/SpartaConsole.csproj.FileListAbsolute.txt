@@ -1,0 +1,15 @@
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\bin\Debug\net6.0\SpartaConsole.exe
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\bin\Debug\net6.0\SpartaConsole.deps.json
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\bin\Debug\net6.0\SpartaConsole.runtimeconfig.json
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\bin\Debug\net6.0\SpartaConsole.dll
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\bin\Debug\net6.0\SpartaConsole.pdb
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.csproj.AssemblyReference.cache
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.GeneratedMSBuildEditorConfig.editorconfig
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.AssemblyInfoInputs.cache
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.AssemblyInfo.cs
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.csproj.CoreCompileInputs.cache
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.dll
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\refint\SpartaConsole.dll
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.pdb
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.genruntimeconfig.cache
+D:\Unity\VisualStudio\2W1\SpartaConsole\SpartaConsole\obj\Debug\net6.0\ref\SpartaConsole.dll
