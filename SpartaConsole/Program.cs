@@ -19,6 +19,7 @@ namespace JG
         {
             Armor = 0,
             Weapon = 1,
+            Helmet = 2,
         }
 
         enum ItemName
@@ -73,11 +74,13 @@ namespace JG
             {
                 Item noviceArmor = new Item("수련자 갑옷", 0, 5, "수련에 도움을 주는 갑옷입니다.", 1000, (int)ItemType.Armor);
                 Item ironArmor = new Item("무쇠 갑옷", 0, 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 1500, (int)ItemType.Armor);
-                Item spartanArmor = new Item("스파르타의 갑옷", 0, 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, (int)ItemType.Armor);
+                Item spartanArmor = new Item("스파르타 갑옷", 0, 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, (int)ItemType.Armor);
 
                 Item oldSword = new Item("낡은 검", 2, 0, "쉽게 볼 수 있는 낡은 검 입니다.", 600, (int)ItemType.Weapon);
                 Item bronzeAxe = new Item("청동 도끼", 5, 0, "어디선가 사용됐던거 같은 도끼입니다.", 1500, (int)ItemType.Weapon);
-                Item spartanSpear = new Item("스파르타의 창", 7, 0, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2000, (int)ItemType.Weapon);
+                Item spartanSpear = new Item("스파르타 창", 7, 0, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2000, (int)ItemType.Weapon);
+
+                Item spartanHelmet = new Item("스파르타 투구", 0, 9, " 스파르타의 전사들이 사용했다는 전설의 투구입니다.", 3500, (int)ItemType.Helmet);
 
                 itemList.Clear();
 
@@ -87,6 +90,7 @@ namespace JG
                 itemList.Add(oldSword);
                 itemList.Add(bronzeAxe);
                 itemList.Add(spartanSpear);
+                itemList.Add(spartanHelmet);
 
             }
 
@@ -103,8 +107,9 @@ namespace JG
             public int PlayerGold { get; set; }
             public List<Item> inventory = new List<Item>();
 
-            public Item? equippedWeapon;
-            public Item? equippedArmor;
+            public Item[] equippedItem = new Item[Enum.GetValues(typeof(ItemType)).Length];
+            //public Item? equippedWeapon;
+           // public Item? equippedArmor;
 
             public Player()
             {
@@ -114,10 +119,12 @@ namespace JG
                 PlayerOffense = 10;
                 PlayerDefense = 5;
                 PlayerHP = 100;
-                PlayerGold = 1500;
+                PlayerGold = 1500000;
 
-                equippedWeapon = null ;
-                equippedArmor = null;
+                /*equippedWeapon = null ;
+                equippedArmor = null;*/
+
+                
             }
 
         }
@@ -132,8 +139,6 @@ namespace JG
             Shop shop = new Shop();            
                                  
             ActionSelect(player);
-
-
 
             void ActionSelect(Player player)
             {
@@ -272,12 +277,7 @@ namespace JG
                 {
                     int parseNumber = ActionLoop();
 
-                    if (parseNumber == (int)ItemName.NoviceArmor  ||
-                        parseNumber == (int)ItemName.IronArmor    ||
-                        parseNumber == (int)ItemName.spartanArmor ||
-                        parseNumber == (int)ItemName.oldSword ||
-                        parseNumber == (int)ItemName.bronzeAxe ||
-                        parseNumber == (int)ItemName.spartanSpear )
+                    if (parseNumber > 0 && parseNumber <= shop.itemList.Count)
                     {
                         ItemBuy(parseNumber, player);                        
                     }
@@ -325,7 +325,7 @@ namespace JG
 
                 for (int i = 0; i < player.inventory.Count; i++)
                 {
-                    if (player.inventory[i] == player.equippedArmor || player.inventory[i] == player.equippedWeapon)
+                    if ( player.equippedItem.Contains(player.inventory[i]) )
                     {
                         inventoryText.Append("[E]");
                     }
@@ -376,7 +376,7 @@ namespace JG
                 {
                     equipmentText.Append($"{i + 1} ");
 
-                    if (player.inventory[i] == player.equippedArmor || player.inventory[i] == player.equippedWeapon)
+                    if (player.equippedItem.Contains(player.inventory[i]) )
                     {
                         equipmentText.Append("[E]");
                     }
@@ -419,32 +419,25 @@ namespace JG
 
             void Equip(int parseNumber)
             {
-                int shopIndex = parseNumber - 1;
+                int inventoryIndex = parseNumber - 1;
 
-                if ( (player.inventory[shopIndex] == player.equippedWeapon) )
+               if ( player.equippedItem.Contains(player.inventory[inventoryIndex]) )
                 {
-                    player.equippedWeapon = null;
-                }
-                else if (player.inventory[shopIndex] == player.equippedArmor)
-                {
-                    player.equippedArmor = null;
+                    player.equippedItem[player.inventory[inventoryIndex].ItemType] = null;
                 }
                 else
                 {
-                    if (player.inventory[shopIndex].ItemType == (int)ItemType.Armor)
+                    player.equippedItem[player.inventory[inventoryIndex].ItemType] = player.inventory[inventoryIndex];
+                }
+
+                /*for ( int i = 0; i < player.equippedItem.Length; i++ )
+                {
+                    if (player.equippedItem[i] != null)
                     {
-                        player.equippedArmor = player.inventory[shopIndex];
-                    }
-                    else if (player.inventory[shopIndex].ItemType == (int)ItemType.Weapon)
-                    {
-                        player.equippedWeapon = player.inventory[shopIndex];
-                    }
-                    else
-                    {
-                        Console.WriteLine("존재하지 않는 아이템 타입입니다.");
+                        Console.WriteLine(player.equippedItem[i].ItemName);
                     }
                     
-                }
+                }*/
 
                 EquipmentManagement();
             }
