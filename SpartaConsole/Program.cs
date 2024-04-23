@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel.Design;
-using System.Text;
-using static JG.Program;
+﻿using System.Text;
+using Newtonsoft.Json;
 
 namespace JG
 {
@@ -10,12 +8,19 @@ namespace JG
         enum PlayerActionType
         {
             Quit = 0,
-            ViewStatus = 1,
-            Equipment = 1,
-            ItemBuy = 1,
-            ItemSell = 2,
+            ViewStatus = 1,                        
             Inventory = 2,
             OpenShop = 3,
+            EnterTheDungeon = 4,
+            Rest = 5,
+
+            Equipment = 1,
+
+            ItemBuy = 1,
+            ItemSell = 2,
+
+            
+            ReTry = 1,
         }
 
         enum ItemType
@@ -36,6 +41,12 @@ namespace JG
             spartanSpear = 6
         }
         
+        enum DunGeonType
+        {
+            Easy = 1,
+            Normal = 2,
+            Hard = 3,
+        }
 
 
         public class Item
@@ -104,15 +115,17 @@ namespace JG
             public int PlayerLevel { get; set; }
             public string PlayerName { get; set; }
             public string PlayerClass { get; set; }
-            public int PlayerOffense { get; set; }
-            public int PlayerDefense { get; set; }
+            public float PlayerOffense { get; set; }
+            public float PlayerDefense { get; set; }
             public int PlayerHP { get; set; }
             public int PlayerGold { get; set; }
+
+            public int PlayerMaximumHP { get; set; }
+
+
             public List<Item> inventory = new List<Item>();
 
             public Item[] equippedItem = new Item[Enum.GetValues(typeof(ItemType)).Length];
-            //public Item? equippedWeapon;
-           // public Item? equippedArmor;
 
             public Player()
             {
@@ -122,12 +135,9 @@ namespace JG
                 PlayerOffense = 10;
                 PlayerDefense = 5;
                 PlayerHP = 100;
+                PlayerMaximumHP = 100;
+
                 PlayerGold = 1500000;
-
-                /*equippedWeapon = null ;
-                equippedArmor = null;*/
-
-                
             }
 
         }
@@ -137,15 +147,19 @@ namespace JG
         static void Main(string[] args)
         {    
             // 플레이어 생성
-            Player player = new Player();
+            Player player = LoadDataCheck();
+
+            //LoadDataCheck();
 
             Shop shop = new Shop();            
                                  
-            ActionSelect(player);
+            ActionSelect();
 
-            void ActionSelect(Player player)
+            void ActionSelect()
             {
                 
+
+
                 // 게임 시작시 간단한 소개 말과 마을에서 할 수 있는 행동을 알려줍니다.
                 Introduction();
 
@@ -157,7 +171,9 @@ namespace JG
 
                     if (parseNumber == (int)PlayerActionType.ViewStatus ||
                         parseNumber == (int)PlayerActionType.Inventory ||
-                        parseNumber == (int)PlayerActionType.OpenShop)
+                        parseNumber == (int)PlayerActionType.OpenShop   ||
+                        parseNumber == (int)PlayerActionType.EnterTheDungeon ||
+                        parseNumber == (int)PlayerActionType.Rest)
                     {
                         PlayerAction(parseNumber, player);
                         break;
@@ -175,12 +191,18 @@ namespace JG
                                                     .AppendLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n")
                                                     .AppendLine("1. 상태 보기")
                                                     .AppendLine("2. 인벤토리")
-                                                    .AppendLine("3. 상점");
+                                                    .AppendLine("3. 상점")
+                                                    .AppendLine("4. 던전 입장")
+                                                    .AppendLine("5. 휴식하기");
                 Console.WriteLine(stringBuilder);
             }
 
             int ActionLoop()
             {
+                string saveData = JsonConvert.SerializeObject(player);
+                File.WriteAllText("saveData.json", saveData);
+
+
                 while (true)
                 {
                     Console.WriteLine("원하시는 행동을 입력해주세요.");
@@ -214,6 +236,12 @@ namespace JG
                     case PlayerActionType.OpenShop:
                         OpenShop(player);
                         //Console.WriteLine("상점");
+                        break;
+                    case PlayerActionType.EnterTheDungeon:
+                        EnterTheDunGeon();
+                        break;
+                    case PlayerActionType.Rest:
+                        Rest();
                         break;
                     default:
                         Console.WriteLine("플레이어 액션 예외처리");
@@ -275,7 +303,7 @@ namespace JG
 
                     if (parseNumber == (int)PlayerActionType.Quit)
                     {
-                        ActionSelect(player);
+                        ActionSelect();
                         break;
                     }
                     else
@@ -328,11 +356,7 @@ namespace JG
                 while (true)
                 {
                     int parseNumber = ActionLoop();
-
-                    /*if (parseNumber > 0 && parseNumber <= shop.itemList.Count)
-                    {
-                        ItemBuy(parseNumber, player);                        
-                    }*/
+                                        
                     if (parseNumber == (int)PlayerActionType.ItemBuy)
                     {
                         ShopBuyMode();
@@ -343,7 +367,7 @@ namespace JG
                     }
                     else if (parseNumber == (int)PlayerActionType.Quit)
                     {
-                        ActionSelect(player);
+                        ActionSelect();
                         break;
                     }
                     else
@@ -525,7 +549,7 @@ namespace JG
                     }
                     else if (parseNumber == (int)PlayerActionType.Quit)
                     {
-                        ActionSelect(player);
+                        ActionSelect();
                         break;
                     }
                     else
@@ -612,10 +636,295 @@ namespace JG
                 EquipmentManagement();
             }
 
+            void EnterTheDunGeon()
+            {
+                StringBuilder dungeonText = new StringBuilder("던전입장\n")
+                                                        .AppendLine("이곳에서 던전을 들어가기전 활동을 할 수 있습니다.\n")
+
+                .AppendLine($"1. 쉬운 던전\t 방어력 5 이상 권장")
+                .AppendLine($"2. 일반 던전\t 방어력 11 이상 권장")
+                .AppendLine($"3. 어려운 던전\t 방어력 17 이상 권장")
+                .AppendLine($"0. 나가기");
+
+                Console.WriteLine(dungeonText);
+
+
+                while (true)
+                {
+                    int parseNumber = ActionLoop();
+
+                    /*if (parseNumber > 0 && parseNumber <= shop.itemList.Count)
+                    {
+                        ItemBuy(parseNumber, player);                        
+                    }*/
+                    if (parseNumber == (int)DunGeonType.Easy)
+                    {
+                        DungeonFight(parseNumber);
+                        break;
+                    }
+                    else if (parseNumber == (int)DunGeonType.Normal)
+                    {
+                        DungeonFight(parseNumber);
+                        break;
+                    }
+                    else if (parseNumber == (int)DunGeonType.Hard)
+                    {
+                        DungeonFight(parseNumber);
+                        break;
+                    }
+                    else if (parseNumber == (int)PlayerActionType.Quit)
+                    {
+                        ActionSelect();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+                }
+            }
+
+            void DungeonFight(int parseNumber)
+            {
+                float bonusOffense = 0;
+                int bonusDefense = 0;
+
+                int beforeHP = player.PlayerHP;
+                int beforeGold = player.PlayerGold;
+
+                for (int i = 0; i < player.equippedItem.Length; i++)
+                {
+                    if (player.equippedItem[i] != null)
+                    {
+                        bonusOffense += player.equippedItem[i].ItemOffense;
+                        bonusDefense += player.equippedItem[i].ItemDefense;
+                    }
+                }
+
+                float totalOffense = player.PlayerOffense + bonusOffense;
+                float totalDefense = player.PlayerDefense + bonusDefense;
+
+                int defenseCondition = 0;
+
+                switch ( parseNumber )
+                {
+                    case (int)DunGeonType.Easy:
+                        defenseCondition = 5;
+                        break;
+                    case (int)DunGeonType.Normal:
+                        defenseCondition = 11;
+                        break;
+                    case (int)DunGeonType.Hard:
+                        defenseCondition = 17;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (totalDefense < defenseCondition)
+                {
+                    int dice = new Random().Next(1, 11);
+
+                    if ( dice > 4)
+                    {
+                        player.PlayerHP /= 2;
+
+                        if ( player.PlayerHP <= 0 ) 
+                        {
+                            Dead();
+                            return;
+                        }
+
+                        StringBuilder failText = new StringBuilder("던전 클리어 실패!\n")
+                                                        .AppendLine("당신은 던전 클리어에 실패하고 체력에 일부를 잃고 도망쳤습니다.\n")
+                                                        .AppendLine($"당신의 현재 체력: {player.PlayerHP}");
+
+                        Console.WriteLine(failText);
+                        ActionSelect();
+                        return;
+                    }
+                }
+
+                int costHP = new Random().Next(20, 36);
+
+                costHP -= ((int)totalDefense - defenseCondition);
+                costHP = costHP < 0 ? 0 : costHP;
+                player.PlayerHP -= costHP;
+
+                if (player.PlayerHP <= 0)
+                {
+                    Dead();
+                    return;
+                }
+
+                float clearReward = 0;
+
+                switch (parseNumber)
+                {
+                    case (int)DunGeonType.Easy:
+                        clearReward = 1000;
+                        break;
+                    case (int)DunGeonType.Normal:
+                        clearReward = 1700;
+                        break;
+                    case (int)DunGeonType.Hard:
+                        clearReward = 2500;
+                        break;
+                    default:
+                        break;
+                }
+
+                float bonusReward = new Random().Next((int)totalOffense, ((int)totalOffense * 2) + 1);
+
+                clearReward *= (1 + (bonusReward / 100));
+
+                player.PlayerGold += (int)clearReward;
+
+                StringBuilder clearText = new StringBuilder("던전 클리어 성공!\n")
+                                                        .AppendLine("축하합니다!!\n");
+
+                switch (parseNumber)
+                {
+                    case (int)DunGeonType.Easy:
+                        clearText.Append("쉬운 던전");
+                        break;
+                    case (int)DunGeonType.Normal:
+                        clearText.Append("일반 던전");
+                        break;
+                    case (int)DunGeonType.Hard:
+                        clearText.Append("어려운 던전");
+                        break;                    
+                }
+                clearText.AppendLine("을 클리어 하였습니다.\n")
+                    .AppendLine("[탐험 결과]")
+                    .AppendLine($"추가 보상 : {bonusReward} %")
+                    .AppendLine($"체력 {beforeHP} -> {player.PlayerHP}")
+                    .AppendLine($"Gold {beforeGold} G -> {player.PlayerGold} G \n")
+                    .AppendLine($"0. 나가기");
+
+                Console.WriteLine(clearText);
+
+                while (true)
+                {
+                    parseNumber = ActionLoop();
+
+                    if (parseNumber == (int)PlayerActionType.Quit)
+                    {
+                        ActionSelect();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+                }
+            }
+
+            void Dead()
+            {
+                Console.WriteLine("당신은 사망하였습니다. 게임을 다시 시작하시겠습니까?");
+
+                while (true)
+                {
+                    int parseNumber = ActionLoop();
+                                        
+                    if (parseNumber == (int)PlayerActionType.ReTry)
+                    {
+                        player = new Player();
+
+                        ActionSelect();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+
+                }
+                
+                
+            }
+
+            void Rest()
+            {
+                StringBuilder restText = new StringBuilder("휴식하기\n")
+                                                        .AppendLine($"500 G 를 내면 체력을 40회복할 수 있습니다.")
+                                                        .AppendLine($"현재 체력 : {player.PlayerHP} \n ")
+                                                        .AppendLine($"보유 골드 : {player.PlayerGold} G \n ")
+
+                .AppendLine($"1. 휴식하기")
+                .AppendLine($"0. 나가기");
+
+                Console.WriteLine(restText);
+
+
+                while (true)
+                {
+                    int parseNumber = ActionLoop();
+
+                    if (parseNumber == (int)DunGeonType.Easy)
+                    {
+                        Heal();
+                        break;
+                    }
+                    else if (parseNumber == (int)PlayerActionType.Quit)
+                    {
+                        ActionSelect();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+                }
+            }
+
+            void Heal()
+            {
+                if ( player.PlayerGold < 500)
+                {
+                    Console.WriteLine("Gold가 부족합니다.");                    
+                }
+                else
+                {
+                    player.PlayerGold -= 500;
+                    player.PlayerHP += 40;
+
+                    if ( player.PlayerHP >= player.PlayerMaximumHP)
+                    {
+                        player.PlayerHP = player.PlayerMaximumHP;
+                    }
+                }
+
+                Rest();
+            }
+
+
+            Player LoadDataCheck()
+            {
+                if ( File.Exists("saveData.json"))
+                {
+                    string loadJson = File.ReadAllText("saveData.json");
+
+                    Player loadPlayer = JsonConvert.DeserializeObject<Player>(loadJson);
+
+                    Console.WriteLine("로드데이터 성공!!!!!");
+
+                    return loadPlayer;
+                }
+                else
+                {
+                    Console.WriteLine("초기 플레이어! 성공!!!!!");
+
+
+                    return new Player();
+                }
+            }
+
         }
 
-        
-                
+
+
     }
 }
 

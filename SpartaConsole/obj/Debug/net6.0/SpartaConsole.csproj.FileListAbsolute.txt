@@ -28,3 +28,5 @@ D:\Unity\VisualStudio\SpartanConsole\SpartaConsole\obj\Debug\net6.0\refint\Spart
 D:\Unity\VisualStudio\SpartanConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.pdb
 D:\Unity\VisualStudio\SpartanConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.genruntimeconfig.cache
 D:\Unity\VisualStudio\SpartanConsole\SpartaConsole\obj\Debug\net6.0\ref\SpartaConsole.dll
+D:\Unity\VisualStudio\SpartanConsole\SpartaConsole\bin\Debug\net6.0\Newtonsoft.Json.dll
+D:\Unity\VisualStudio\SpartanConsole\SpartaConsole\obj\Debug\net6.0\SpartaConsole.csproj.CopyComplete

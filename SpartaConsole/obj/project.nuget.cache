@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "IBDoe5GARK5fpj96nOfA8LkCRQ/scvlJOnAykYyY40LBzrKfvlHYLp7Q56L1EJdiFR+4QZlnqQ4/wGULBFeIHw==",
+  "dgSpecHash": "YAst0nIfxsgJguP7SL5QDLUx4CtJ2vXouGvTEBgzmKsMeXLsllN0MPW/UxWSVJu4dbDmEWeZRjDT3V1FIyithQ==",
   "success": true,
   "projectFilePath": "D:\\Unity\\VisualStudio\\SpartanConsole\\SpartaConsole\\SpartaConsole.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\rkdnj\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
