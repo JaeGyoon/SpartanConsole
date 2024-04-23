@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Text;
 using static JG.Program;
 
@@ -11,6 +12,8 @@ namespace JG
             Quit = 0,
             ViewStatus = 1,
             Equipment = 1,
+            ItemBuy = 1,
+            ItemSell = 2,
             Inventory = 2,
             OpenShop = 3,
         }
@@ -73,14 +76,14 @@ namespace JG
             public Shop() 
             {
                 Item noviceArmor = new Item("수련자 갑옷", 0, 5, "수련에 도움을 주는 갑옷입니다.", 1000, (int)ItemType.Armor);
-                Item ironArmor = new Item("무쇠 갑옷", 0, 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 1500, (int)ItemType.Armor);
+                Item ironArmor = new Item("무쇠 갑옷", 0, 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000, (int)ItemType.Armor);
                 Item spartanArmor = new Item("스파르타 갑옷", 0, 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, (int)ItemType.Armor);
 
                 Item oldSword = new Item("낡은 검", 2, 0, "쉽게 볼 수 있는 낡은 검 입니다.", 600, (int)ItemType.Weapon);
                 Item bronzeAxe = new Item("청동 도끼", 5, 0, "어디선가 사용됐던거 같은 도끼입니다.", 1500, (int)ItemType.Weapon);
-                Item spartanSpear = new Item("스파르타 창", 7, 0, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2000, (int)ItemType.Weapon);
+                Item spartanSpear = new Item("스파르타 창", 7, 0, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 3000, (int)ItemType.Weapon);
 
-                Item spartanHelmet = new Item("스파르타 투구", 0, 9, " 스파르타의 전사들이 사용했다는 전설의 투구입니다.", 3500, (int)ItemType.Helmet);
+                Item spartanHelmet = new Item("스파르타 투구", 0, 9, "스파르타의 전사들이 사용했다는 전설의 투구입니다.", 3500, (int)ItemType.Helmet);
 
                 itemList.Clear();
 
@@ -142,6 +145,7 @@ namespace JG
 
             void ActionSelect(Player player)
             {
+                
                 // 게임 시작시 간단한 소개 말과 마을에서 할 수 있는 행동을 알려줍니다.
                 Introduction();
 
@@ -260,15 +264,30 @@ namespace JG
 
                 for (int i = 0; i < shop.itemList.Count; i++)
                 {
-                    shopText.Append($"{i + 1}.")
+                    shopText/*.Append($"{i + 1}.")*/
                             .Append($"{shop.itemList[i].ItemName}\t")
-                            .Append($"{shop.itemList[i].ItemOffense}\t")
-                            .Append($"{shop.itemList[i].ItemDefense}\t")
-                            .Append($"{shop.itemList[i].ItemDesc}\t")
-                            .AppendLine($"{shop.itemList[i].ItemValue}\t");
-                }
+                            .Append($"공격력 + {shop.itemList[i].ItemOffense}\t")
+                            .Append($"방어력 + {shop.itemList[i].ItemDefense}\t")
+                            .Append($"{shop.itemList[i].ItemDesc}\t");
 
-                shopText.AppendLine($"\n0. 나가기");
+                    if (player.inventory.Contains(shop.itemList[i]) )
+                    {
+                        shopText.AppendLine($"구매완료\t");
+                    }
+                    else
+                    {
+                        shopText.AppendLine($"가격: {shop.itemList[i].ItemValue} G\t");
+                    }
+                    
+
+                    
+                }
+                shopText.AppendLine("");
+
+                shopText.AppendLine($"1. 아이템 구매");
+                shopText.AppendLine($"2. 아이템 판매");
+
+                shopText.AppendLine($"0. 나가기");
 
                 Console.WriteLine(shopText);
 
@@ -277,16 +296,118 @@ namespace JG
                 {
                     int parseNumber = ActionLoop();
 
-                    if (parseNumber > 0 && parseNumber <= shop.itemList.Count)
+                    /*if (parseNumber > 0 && parseNumber <= shop.itemList.Count)
                     {
                         ItemBuy(parseNumber, player);                        
+                    }*/
+                    if (parseNumber == (int)PlayerActionType.ItemBuy)
+                    {
+                        ShopBuyMode();
+                    }
+                    else if (parseNumber == (int)PlayerActionType.ItemSell)
+                    {
+                        ShopSellMode();
                     }
                     else if (parseNumber == (int)PlayerActionType.Quit)
                     {
                         ActionSelect(player);
                         break;
                     }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+                }
+            }
 
+            void ShopBuyMode()
+            {
+                StringBuilder shopText = new StringBuilder("상점 - 아이템 구매\n")
+                                                    .AppendLine("필요한 아이템을 얻을 수 있는 상점입니다.\n")
+                                                    .AppendLine("[보유 골드]")
+                                                    .AppendLine($"{player.PlayerGold} G\n")
+                                                    .AppendLine("[아이템 목록]");
+
+                for (int i = 0; i < shop.itemList.Count; i++)
+                {
+                    shopText.Append($"{i + 1}.")
+                            .Append($"{shop.itemList[i].ItemName}\t")
+                            .Append($"공격력 + {shop.itemList[i].ItemOffense}\t")
+                            .Append($"방어력 + {shop.itemList[i].ItemDefense}\t")
+                            .Append($"{shop.itemList[i].ItemDesc}\t");
+
+                    if (player.inventory.Contains(shop.itemList[i]))
+                    {
+                        shopText.AppendLine($"구매완료\t");
+                    }
+                    else
+                    {
+                        shopText.AppendLine($"가격: {shop.itemList[i].ItemValue} G\t");
+                    }
+                }
+                shopText.AppendLine("");
+                shopText.AppendLine($"0. 나가기");
+
+                Console.WriteLine(shopText);
+
+                while (true)
+                {
+                    int parseNumber = ActionLoop();
+
+                    if (parseNumber > 0 && parseNumber <= shop.itemList.Count)
+                    {
+                        ItemBuy(parseNumber, player);
+                    }
+                    else if (parseNumber == (int)PlayerActionType.Quit)
+                    {
+                        OpenShop(player);
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+                }
+            }
+
+            void ShopSellMode()
+            {
+                StringBuilder shopText = new StringBuilder("상점 - 아이템 판매\n")
+                                                    .AppendLine("필요한 아이템을 얻을 수 있는 상점입니다.\n")
+                                                    .AppendLine("[보유 골드]")
+                                                    .AppendLine($"{player.PlayerGold} G\n")
+                                                    .AppendLine("[아이템 목록]");
+
+                for (int i = 0; i < player.inventory.Count; i++)
+                {
+                    shopText.Append($"{i + 1}.")
+                            .Append($"{player.inventory[i].ItemName}\t")
+                            .Append($"공격력 + {player.inventory[i].ItemOffense}\t")
+                            .Append($"방어력 + {player.inventory[i].ItemDefense}\t")
+                            .Append($"{player.inventory[i].ItemDesc}\t");
+
+                    
+                    shopText.AppendLine($"가격: { (player.inventory[i].ItemValue) * 0.85} G\t");
+                    
+                }
+                shopText.AppendLine("");
+                shopText.AppendLine($"0. 나가기");
+
+                Console.WriteLine(shopText);
+
+                while (true)
+                {
+                    int parseNumber = ActionLoop();
+
+                    if (parseNumber > 0 && parseNumber <= shop.itemList.Count)
+                    {
+                        ItemSell(parseNumber);                        
+                    }                    
+                    else if (parseNumber == (int)PlayerActionType.Quit)
+                    {
+                        OpenShop(player);
+                        break;
+                    }
                     else
                     {
                         Console.WriteLine("잘못된 입력입니다.");
@@ -310,11 +431,27 @@ namespace JG
                     player.inventory.Add(shop.itemList[shopIndex]);
 
                     Console.WriteLine("구매를 완료했습니다.");
+                    ShopBuyMode();
                 }
                 else
                 {
                     Console.WriteLine("Gold가 부족합니다.");
                 }
+            }
+
+            void ItemSell(int parseNumber)
+            {
+                int inventoryIndex = parseNumber - 1;
+
+                Console.WriteLine(inventoryIndex);
+                Console.WriteLine(player.inventory[inventoryIndex].ItemName);
+
+                player.PlayerGold += (int)(player.inventory[inventoryIndex].ItemValue * 0.85f);
+
+                player.inventory.Remove(player.inventory[inventoryIndex]);
+
+                ShopSellMode();
+
             }
 
             void OpenInventory(Player player)
