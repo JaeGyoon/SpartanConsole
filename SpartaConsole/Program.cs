@@ -223,13 +223,46 @@ namespace JG
 
             void ViewStatus(Player player)
             {
+                int bonusOffense = 0;
+                int bonusDefense = 0;
+
+                for( int i = 0; i < player.equippedItem.Length; i++ )
+                {
+                    if (player.equippedItem[i] != null)
+                    {
+                        bonusOffense += player.equippedItem[i].ItemOffense;
+                        bonusDefense += player.equippedItem[i].ItemDefense;
+                    }
+                }
+
                 StringBuilder statusText = new StringBuilder("상태 보기\n")
                                                     .AppendLine("캐릭터의 정보가 표시됩니다.\n")
                                                     .AppendLine($"Lv.{player.PlayerLevel.ToString("D2")} ")
-                                                    .AppendLine($"{player.PlayerName} ({player.PlayerClass})")
-                                                    .AppendLine($"공격력: {player.PlayerOffense}")
-                                                    .AppendLine($"방어력: {player.PlayerDefense}")
-                                                    .AppendLine($"체  력: {player.PlayerHP}")
+                                                    .AppendLine($"{player.PlayerName} ({player.PlayerClass})");
+
+                if (bonusOffense > 0)
+                {
+                    statusText.AppendLine($"공격력: {player.PlayerOffense + bonusOffense} (+ {bonusOffense})");
+                }
+                else
+                {
+                    statusText.AppendLine($"공격력: {player.PlayerOffense + bonusOffense}");
+                }
+
+                if (bonusDefense > 0)
+                {
+                    statusText.AppendLine($"방어력: {player.PlayerDefense + bonusDefense} (+ {bonusDefense})");
+                }
+                else
+                {
+                    statusText.AppendLine($"방어력: {player.PlayerDefense + bonusDefense}");
+                }
+
+
+
+                /*.AppendLine($"공격력: {player.PlayerOffense + bonusOffense} (+ {bonusOffense})")
+                .AppendLine($"방어력: {player.PlayerDefense + bonusDefense} (+ {bonusDefense})")*/
+                statusText.AppendLine($"체  력: {player.PlayerHP}")
                                                     .AppendLine($"Gold: {player.PlayerGold} \n")
                                                     .AppendLine($"0. 나가기");
 
