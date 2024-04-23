@@ -51,7 +51,7 @@ namespace JG
 
         public class Item
         {
-            public string? ItemName { get; set; }
+            public string ItemName { get; set; }
             public int ItemOffense { get; set; }
             public int ItemDefense { get; set; }
 
@@ -137,7 +137,7 @@ namespace JG
                 PlayerHP = 100;
                 PlayerMaximumHP = 100;
 
-                PlayerGold = 1500000;
+                PlayerGold = 1500;
             }
 
         }
@@ -151,7 +151,10 @@ namespace JG
 
             //LoadDataCheck();
 
-            Shop shop = new Shop();            
+            Shop shop = new Shop();
+
+            ItemSync();
+
                                  
             ActionSelect();
 
@@ -804,6 +807,14 @@ namespace JG
 
                 Console.WriteLine(clearText);
 
+                if ( player.PlayerLevel < 5)
+                {
+                    player.PlayerLevel++;
+                    player.PlayerOffense += 0.5f;
+                    player.PlayerDefense += 1f;
+
+                }
+
                 while (true)
                 {
                     parseNumber = ActionLoop();
@@ -831,6 +842,8 @@ namespace JG
                     if (parseNumber == (int)PlayerActionType.ReTry)
                     {
                         player = new Player();
+                        
+                        shop = new Shop();
 
                         ActionSelect();
                         break;
@@ -908,23 +921,42 @@ namespace JG
 
                     Player loadPlayer = JsonConvert.DeserializeObject<Player>(loadJson);
 
-                    Console.WriteLine("로드데이터 성공!!!!!");
-
                     return loadPlayer;
                 }
                 else
-                {
-                    Console.WriteLine("초기 플레이어! 성공!!!!!");
-
-
+                {              
                     return new Player();
                 }
             }
 
+            void ItemSync()
+            {
+                
+                for ( int i = 0; i < shop.itemList.Count; i++)
+                {
+                    for (int j = 0; j < player.inventory.Count; j++)
+                    {
+                        if (shop.itemList[i].ItemName.Equals(player.inventory[j].ItemName))
+                        {
+                            player.inventory[j] = shop.itemList[i];
+                        }
+                    }
+
+                    for (int k = 0; k < player.equippedItem.Length; k++)
+                    {
+                        if (player.equippedItem[k] == null)
+                        {
+                            continue;
+                        }
+
+                        if (shop.itemList[i].ItemName.Equals(player.equippedItem[k].ItemName))
+                        {
+                            player.equippedItem[k] = shop.itemList[i];
+                        }
+                    }
+                }
+            }
         }
-
-
-
     }
 }
 
