@@ -10,6 +10,7 @@ namespace JG
         {
             Quit = 0,
             ViewStatus = 1,
+            Equipment = 1,
             Inventory = 2,
             OpenShop = 3,
         }
@@ -57,6 +58,11 @@ namespace JG
                 ItemType = itemType;
             }
 
+            public Item()
+            {
+
+            }
+
         }
 
         public class Shop
@@ -97,6 +103,8 @@ namespace JG
             public int PlayerGold { get; set; }
             public List<Item> inventory = new List<Item>();
 
+            public Item? equippedWeapon;
+            public Item? equippedArmor;
 
             public Player()
             {
@@ -107,6 +115,9 @@ namespace JG
                 PlayerDefense = 5;
                 PlayerHP = 100;
                 PlayerGold = 1500;
+
+                equippedWeapon = null ;
+                equippedArmor = null;
             }
 
         }
@@ -188,7 +199,8 @@ namespace JG
                         //Console.WriteLine("플레이어 정보");
                         break;
                     case PlayerActionType.Inventory:
-                        Console.WriteLine("인벤토리");
+                        OpenInventory(player);
+                        //Console.WriteLine("인벤토리");
                         break;
                     case PlayerActionType.OpenShop:
                         OpenShop(player);
@@ -236,7 +248,7 @@ namespace JG
 
 
                 StringBuilder shopText = new StringBuilder("상점\n")
-                                                    .AppendLine("필요한 아이템을 얻을 수 있는 상점입니다..\n")
+                                                    .AppendLine("필요한 아이템을 얻을 수 있는 상점입니다.\n")
                                                     .AppendLine("[보유 골드]")
                                                     .AppendLine($"{player.PlayerGold} G\n")
                                                     .AppendLine("[아이템 목록]");
@@ -292,7 +304,7 @@ namespace JG
                 {
                     Console.WriteLine("이미 구매한 아이텝입니다.");
                 }
-                else if ( player.PlayerGold > shop.itemList[shopIndex].ItemValue)
+                else if ( player.PlayerGold >= shop.itemList[shopIndex].ItemValue)
                 {
                     player.PlayerGold -= shop.itemList[shopIndex].ItemValue;
                     player.inventory.Add(shop.itemList[shopIndex]);
@@ -303,6 +315,138 @@ namespace JG
                 {
                     Console.WriteLine("Gold가 부족합니다.");
                 }
+            }
+
+            void OpenInventory(Player player)
+            {
+                StringBuilder inventoryText = new StringBuilder("인벤토리\n")
+                                                    .AppendLine("보유 중인 아이템을 관리할 수 있습니다.\n")
+                                                    .AppendLine("[아이템 목록]");
+
+                for (int i = 0; i < player.inventory.Count; i++)
+                {
+                    if (player.inventory[i] == player.equippedArmor || player.inventory[i] == player.equippedWeapon)
+                    {
+                        inventoryText.Append("[E]");
+                    }
+
+                    inventoryText
+                            .Append($"{player.inventory[i].ItemName}\t")
+                            .Append($"{player.inventory[i].ItemOffense}\t")
+                            .Append($"{player.inventory[i].ItemDefense}\t")
+                            .AppendLine($"{player.inventory[i].ItemDesc}\t");
+                            
+                }
+
+                inventoryText.AppendLine($"\n1. 장착 관리");
+                inventoryText.AppendLine($"0. 나가기");
+
+
+                Console.WriteLine(inventoryText);
+
+                while (true)
+                {
+                    int parseNumber = ActionLoop();
+
+                    if (parseNumber == (int)PlayerActionType.Equipment)
+                    {
+                        EquipmentManagement();
+                        break;                        
+                    }
+                    else if (parseNumber == (int)PlayerActionType.Quit)
+                    {
+                        ActionSelect(player);
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+                }
+            }
+
+            void EquipmentManagement()
+            {
+
+                StringBuilder equipmentText = new StringBuilder("인벤토리 - 장착 관리\n")
+                                                    .AppendLine("보유 중인 아이템을 관리할 수 있습니다.\n")
+                                                    .AppendLine("[아이템 목록]");
+
+                for (int i = 0; i < player.inventory.Count; i++)
+                {
+                    equipmentText.Append($"{i + 1} ");
+
+                    if (player.inventory[i] == player.equippedArmor || player.inventory[i] == player.equippedWeapon)
+                    {
+                        equipmentText.Append("[E]");
+                    }
+
+                    equipmentText.Append($"{player.inventory[i].ItemName}\t")
+                            .Append($"{player.inventory[i].ItemOffense}\t")
+                            .Append($"{player.inventory[i].ItemDefense}\t")
+                            .AppendLine($"{player.inventory[i].ItemDesc}\t");
+
+                }
+               
+                equipmentText.AppendLine($"\n0. 나가기");
+
+                Console.WriteLine(equipmentText);
+
+                // 입력값을 받고 ( 확인 체크까지 )
+
+                // 내 인벤토리 카운트보다 입력값이 작다면 ( 해당 인벤토리에 있는 인덱스를 입력했다면 )
+
+                while (true)
+                {
+                    int parseNumber = ActionLoop();
+
+                    if (parseNumber > 0 && parseNumber < player.inventory.Count + 1)
+                    {
+                        // 장비 장착하는 로직 추가
+                        Equip(parseNumber);
+                    }
+                    else if (parseNumber == (int)PlayerActionType.Quit)
+                    {
+                        OpenInventory(player);
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.");
+                    }
+                }
+            }
+
+            void Equip(int parseNumber)
+            {
+                int shopIndex = parseNumber - 1;
+
+                if ( (player.inventory[shopIndex] == player.equippedWeapon) )
+                {
+                    player.equippedWeapon = null;
+                }
+                else if (player.inventory[shopIndex] == player.equippedArmor)
+                {
+                    player.equippedArmor = null;
+                }
+                else
+                {
+                    if (player.inventory[shopIndex].ItemType == (int)ItemType.Armor)
+                    {
+                        player.equippedArmor = player.inventory[shopIndex];
+                    }
+                    else if (player.inventory[shopIndex].ItemType == (int)ItemType.Weapon)
+                    {
+                        player.equippedWeapon = player.inventory[shopIndex];
+                    }
+                    else
+                    {
+                        Console.WriteLine("존재하지 않는 아이템 타입입니다.");
+                    }
+                    
+                }
+
+                EquipmentManagement();
             }
 
         }

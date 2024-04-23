@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Unity\\VisualStudio\\2W1\\SpartaConsole\\SpartaConsole\\SpartaConsole.csproj",
+      "projectUniqueName": "D:\\Unity\\VisualStudio\\SpartanConsole\\SpartaConsole\\SpartaConsole.csproj",
       "projectName": "SpartaConsole",
-      "projectPath": "D:\\Unity\\VisualStudio\\2W1\\SpartaConsole\\SpartaConsole\\SpartaConsole.csproj",
+      "projectPath": "D:\\Unity\\VisualStudio\\SpartanConsole\\SpartaConsole\\SpartaConsole.csproj",
       "packagesPath": "C:\\Users\\rkdnj\\.nuget\\packages\\",
-      "outputPath": "D:\\Unity\\VisualStudio\\2W1\\SpartaConsole\\SpartaConsole\\obj\\",
+      "outputPath": "D:\\Unity\\VisualStudio\\SpartanConsole\\SpartaConsole\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\rkdnj\\AppData\\Roaming\\NuGet\\NuGet.Config",
