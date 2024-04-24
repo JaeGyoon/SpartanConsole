@@ -125,7 +125,7 @@ namespace JG
 
             public List<Item> inventory = new List<Item>();
 
-            public Item[] equippedItem = new Item[Enum.GetValues(typeof(ItemType)).Length];
+            public Item[] equippedItem = new Item[Enum.GetNames(typeof(ItemType)).Length];
 
             public Player()
             {
